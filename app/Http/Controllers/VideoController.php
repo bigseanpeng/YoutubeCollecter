@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Video;
+use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 
 class VideoController extends Controller
@@ -17,9 +18,12 @@ class VideoController extends Controller
 
     public function show($id){
     	//return "Your video id is $id!";
+        $data = Video::all();
     	$target = Video::find($id);
+        $title = $target->title;
     	$vid = $target->vid;
-    	return view("show", compact("vid"));
+        $comm = Comment::all();
+    	return view("show", compact("id","vid","data","comm","title"));
     }
 
     public function add(Request $req){
@@ -28,6 +32,16 @@ class VideoController extends Controller
         $video->vid = $req->vid;
         $video->save();
         return redirect("/");
+    }
+
+    public function addcom($id, Request $req){
+        $target = Video::find($id);
+        $vid = $target->vid;
+        $comment = new Comment;
+        $comment->comments = $req->com;
+        $comment->video_id = $vid;
+        $comment->save();
+        return redirect("/show/$id/");
     }
 
     public function delete($id){
